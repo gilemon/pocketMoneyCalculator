@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Pocket Money Calculator</title>
+<script>
+	// variables you may change depending on your location
+	var allowedCurrencyValues 	= [1, 2, 5, 10, 20, 50]; //array representing the allowed coins and notes for rounding, usefull if you want to only use notes
+	var currencySymbol = "&euro;"
+	
+	//variables you can change if you want to change the calculation algorithm
+	var agestart 		= 6;
+	var agemax 			= 30;
+	var agechange1 		= 10;
+	var agechange2 		= 14;
+	var agechange3 		= 17;
+	var richnessFactor 	= 5; //from 1 to 10, 4 being default middle class...
+		
+function init()
+{
+	console.log("START INIT");
+	document.getElementById("richnessFactorRange").value = richnessFactor;
+	displayRichnessFactor(richnessFactor);
+
+	document.getElementById("richnessFactorRange").oninput = function() {
+		richnessFactor = this.value;
+		displayRichnessFactor(this.value);
+		computeMoneyPerWeek();
+	}
+	computeMoneyPerWeek();
+	console.log("END INIT");
+}
+
+function displayRichnessFactor(value)
+{
+	var html = '';
+	for (var i = 0; i < value; i++) 
+	{ 
+		html += "&curren;";
+	}
+	document.getElementById("richnessFactor").innerHTML = html;
+}
+
+/* explaining decimal to a 6 year old
+1000000 - 500000 = 50000
+100000 - 50000 = 50000
+10000 - 5000 = 5000
+1000 - 500 = 500
+100 - 50 = 50
+10 - 5 = 5
+1 - 0.5 = 0.5
+0.1 - 0.05 = 0.05
+0.01 - 0.005 = 0.005
+*/
+
+function computeMoneyPerWeek()
+{
+	document.getElementById("info").innerHTML = "";
+	var moneyPerWeek;
+	for (var i = agestart; i <= agemax; i++) 
+	{ 
+		moneyPerWeek = 0;
+		moneyPerWeek += Math.round(i/(8/richnessFactor));
+		if(i>=(agechange1))
+		{
+			moneyPerWeek += Math.round(((i+1)-(agechange1))*richnessFactor) + 1;
+		}
+		if(i>=agechange2)
+		{
+			moneyPerWeek += Math.round((i-agechange2)*richnessFactor);
+		}
+		if(i>=agechange3)
+		{
+			moneyPerWeek += Math.round(Math.log(Math.pow(Math.pow(richnessFactor, richnessFactor), richnessFactor)*i));
+		}
+		document.getElementById("info").innerHTML += i + " years old = " + currencyRoundingDown(moneyPerWeek, 0, allowedCurrencyValues.length-1) + " " + currencySymbol + " per week<br>";
+		//console.log(moneyPerWeek);
+	}
+}
+
+function currencyRoundingDown(value, rounded, rek)
+{
+	//console.log(value + " " + rounded + " " + rek + " " + allowedCurrencyValues[rek]);
+	if(rek >= 0)
+	{
+		var val = parseInt(value/allowedCurrencyValues[rek]);
+		if(val > 0)
+		{
+			return currencyRoundingDown(value % allowedCurrencyValues[rek], rounded + (val * allowedCurrencyValues[rek]), rek-1);
+		}
+		else
+		{
+			return currencyRoundingDown(value, rounded, rek-1);
+		}
+	}
+	else
+	{
+		return rounded;
+	}
+}
+window.addEventListener("load", init, false); 
+	
+</script>
+<style type="text/css">
+*{
+    color:white;
+    font-family:arial;
+}
+h1{
+    margin:10px 0 5px 0;
+    padding:0;
+    font-size:18px;
+}
+p,div{
+    margin:0;
+    padding:0 0 5px 0;
+    font-size:16px;
+}
+html{
+    background-color:#1d71b8;
+}
+	
+</style>
+</head>
+<body>
+	<div id="main" style="margin: auto;width: 30%;border: 3px solid white;border-radius: 15px;padding: 10px 10px 50px 10px; min-width: 748px;">
+		<h1>Pocket Money Calculator</h1>
+		<div id="slidecontainer">
+		  Richness Factor: <span id="richnessFactor" style="color:#ffd949">5</span><br>
+		  <input type="range" min="1" max="10" value="5" class="slider" id="richnessFactorRange">
+		</div>
+		<div id="info">
+		</div>
+		<br><center><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+		<!-- github -->
+		<ins class="adsbygoogle"
+		     style="display:inline-block;width:728px;height:90px"
+		     data-ad-client="ca-pub-0077078557185573"
+		     data-ad-slot="8699761147"></ins>
+		<script>
+		(adsbygoogle = window.adsbygoogle || []).push({});
+		</script><center>
+	</div>
+</body>
+</html>
